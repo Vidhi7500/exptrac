@@ -1,0 +1,150 @@
+import React from "react";
+import {
+  Chart as ChartJs,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from "chart.js";
+import { styled } from "styled-components";
+
+import { Line } from "react-chartjs-2";
+import { useGlobalContext } from "../../context/globalContext";
+import { dateFormat } from "../../utils/dateFormat";
+
+ChartJs.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
+
+function Chart() {
+  const { incomes, expenses } = useGlobalContext();
+
+  const data = {
+    labels: incomes.map((inc) => {
+      const { date } = inc;
+      return dateFormat(date);
+    }),
+
+    datasets: [
+      {
+        label: "Income",
+        data: [
+          ...incomes.map((income) => {
+            const { amount } = income;
+            return amount;
+          }),
+        ],
+        backgroundColor: "green",
+        tension: 0.2,
+      },
+      {
+        label: "Expenses",
+        data: [
+          ...expenses.map((expense) => {
+            const { amount } = expense;
+            return amount;
+          }),
+        ],
+        backgroundColor: "red",
+        tension: 0.2,
+      },
+    ],
+  };
+
+  return (
+    <ChartStyled>
+      <Line data={data} />
+    </ChartStyled>
+  );
+}
+
+const ChartStyled = styled.div`
+  .stats-con {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2rem;
+    .chart-con {
+      grid-column: 1 / 4;
+      height: 400px;
+      .amount-con {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+        margin-top: 2rem;
+        .income,
+        .expense {
+          grid-column: span 2;
+        }
+        .income,
+        .expense,
+        .balance {
+          background: #fcf6f9;
+          border: 2px solid #ffffff;
+          box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
+          border-radius: 20px;
+          padding: 1rem;
+          p {
+            font-size: 3.5rem;
+            font-weight: 700;
+          }
+        }
+
+        .balance {
+          grid-column: 2 / 4;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          p {
+            color: var(--color-green);
+            opacity: 0.6;
+            font-size: 4.5rem;
+          }
+        }
+      }
+    }
+
+    .history-con {
+      grid-column: 4 / -1;
+      h2 {
+        margin: 1rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .salary-title {
+        font-size: 1.2rem;
+        span {
+          font-size: 1.8rem;
+        }
+      }
+      .salary-item {
+        background: #fcf6f9;
+        border: 2px solid #ffffff;
+        box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
+        padding: 1rem;
+        border-radius: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        p {
+          font-weight: 600;
+          font-size: 1.6rem;
+        }
+      }
+    }
+  }
+`;
+
+export default Chart;
